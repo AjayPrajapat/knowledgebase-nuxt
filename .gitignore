@@ -1,0 +1,7 @@
+node_modules
+.nuxt
+.output
+.env
+public/uploads
+public/generated
+.DS_Store
