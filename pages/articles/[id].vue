@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useNavigationStore } from '@/stores/navigation'
+
 const route = useRoute()
 const { data: article, pending, error, refresh } = useFetch(`/api/articles/${route.params.id}`)
+const navigation = useNavigationStore()
+
+const categoryLabel = computed(() => navigation.findById(article.value?.categoryId)?.label || 'Knowledge')
 </script>
 
 <template>
@@ -9,9 +15,14 @@ const { data: article, pending, error, refresh } = useFetch(`/api/articles/${rou
       <div>
         <NuxtLink to="/articles" class="text-sm text-slate-500 hover:text-primary-600">← Back to Articles</NuxtLink>
         <h1 class="mt-3 text-3xl font-bold text-slate-900">{{ article?.title }}</h1>
-        <p class="mt-1 text-xs uppercase tracking-wider text-slate-400">
-          Created {{ article ? new Date(article.createdAt).toLocaleString() : '' }}
-        </p>
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+          <span class="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary-700">
+            {{ categoryLabel }}
+          </span>
+          <p class="text-xs uppercase tracking-wider text-slate-400">
+            Created {{ article ? new Date(article.createdAt).toLocaleString() : '' }}
+          </p>
+        </div>
       </div>
     </div>
 

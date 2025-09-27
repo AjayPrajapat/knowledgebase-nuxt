@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useNavigationStore } from '@/stores/navigation'
+
 const router = useRouter()
+const navigation = useNavigationStore()
+const { categoryOptions, defaultCategoryId } = storeToRefs(navigation)
 const form = reactive({
   name: '',
-  placeholders: ''
+  placeholders: '',
+  categoryId: defaultCategoryId.value
 })
 const file = ref<File | null>(null)
 const error = ref('')
@@ -29,6 +35,7 @@ const submit = async () => {
   const body = new FormData()
   body.append('name', form.name)
   body.append('placeholders', form.placeholders)
+  body.append('categoryId', form.categoryId)
   body.append('file', file.value)
   try {
     await $fetch('/api/templates', {
@@ -62,6 +69,18 @@ const submit = async () => {
           type="text"
           class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
         />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Category</label>
+        <select
+          v-model="form.categoryId"
+          class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+        >
+          <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
+        </select>
       </div>
 
       <div>

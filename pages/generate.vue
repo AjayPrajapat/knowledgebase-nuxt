@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useNavigationStore } from '@/stores/navigation'
+
+const navigation = useNavigationStore()
 const { data: templates, pending } = useFetch('/api/templates')
 const selectedTemplateId = ref('')
 const placeholderValues = ref<Record<string, string>>({})
@@ -22,6 +26,8 @@ watch(selectedTemplateId, (newId) => {
     placeholderValues.value = values
   }
 })
+
+const selectedTemplate = computed(() => templates.value?.find((t: any) => t.id === selectedTemplateId.value))
 
 const generateDoc = async () => {
   error.value = ''
@@ -69,6 +75,14 @@ const generateDoc = async () => {
           </option>
         </select>
         <p v-if="pending" class="mt-1 text-xs text-slate-400">Loading templates...</p>
+        <div v-if="selectedTemplate" class="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+          <span class="rounded-full bg-slate-100 px-3 py-1 font-semibold uppercase tracking-wide text-slate-600">
+            {{ navigation.findById(selectedTemplate.categoryId)?.label || 'Knowledge' }}
+          </span>
+          <span class="rounded-full bg-primary-50 px-3 py-1 font-semibold uppercase tracking-wide text-primary-600">
+            {{ selectedTemplate.placeholders.length }} Placeholders
+          </span>
+        </div>
       </div>
 
       <div v-if="selectedTemplateId" class="space-y-4">
