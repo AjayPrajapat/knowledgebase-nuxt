@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import type Quill from 'quill'
+import { storeToRefs } from 'pinia'
+import { useNavigationStore } from '@/stores/navigation'
 
 const router = useRouter()
 const { $quill } = useNuxtApp()
+const navigation = useNavigationStore()
+const { categoryOptions, defaultCategoryId } = storeToRefs(navigation)
 const form = reactive({
   title: '',
   html: '',
-  delta: null as any
+  delta: null as any,
+  categoryId: defaultCategoryId.value
 })
 const saving = ref(false)
 const error = ref('')
@@ -85,7 +90,8 @@ const submit = async () => {
       body: {
         title: form.title,
         html: form.html,
-        delta: form.delta
+        delta: form.delta,
+        categoryId: form.categoryId
       }
     })
     router.push('/articles')
@@ -115,6 +121,18 @@ const submit = async () => {
           type="text"
           class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
         />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Category</label>
+        <select
+          v-model="form.categoryId"
+          class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+        >
+          <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
+        </select>
       </div>
 
       <div>

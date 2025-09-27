@@ -2,6 +2,8 @@ node_modules
 .nuxt
 .output
 .env
-public/uploads
-public/generated
+public/uploads/*
+public/generated/*
+!public/uploads/.gitkeep
+!public/generated/.gitkeep
 .DS_Store

@@ -10,6 +10,7 @@ export interface Article {
   title: string
   html: string
   delta: any
+  categoryId?: string
   createdAt: string
 }
 
@@ -19,6 +20,7 @@ export interface TemplateMeta {
   originalFilename: string
   filePath: string
   placeholders: string[]
+  categoryId?: string
   createdAt: string
 }
 

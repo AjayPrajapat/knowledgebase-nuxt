@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
 
   const name = String(fields.name || '').trim()
   const placeholderText = String(fields.placeholders || '')
+  const categoryId = String(fields.categoryId || 'knowledge').trim() || 'knowledge'
 
   if (!name) {
     throw createError({ statusCode: 400, message: 'Template name is required.' })
@@ -74,6 +75,7 @@ export default defineEventHandler(async (event) => {
     originalFilename: file.originalFilename || `${name}.docx`,
     filePath: destPath,
     placeholders,
+    categoryId,
     createdAt: new Date().toISOString()
   }
 

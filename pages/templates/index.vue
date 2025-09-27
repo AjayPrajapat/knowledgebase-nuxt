@@ -1,5 +1,12 @@
 <script setup lang="ts">
+import { useNavigationStore } from '@/stores/navigation'
+
 const { data: templates, pending } = useFetch('/api/templates')
+const navigation = useNavigationStore()
+
+const resolveCategoryLabel = (categoryId?: string | null) => {
+  return navigation.findById(categoryId)?.label || 'Knowledge'
+}
 </script>
 
 <template>
@@ -27,6 +34,9 @@ const { data: templates, pending } = useFetch('/api/templates')
           </div>
           <div class="text-xs text-slate-500">{{ template.originalFilename }}</div>
         </div>
+        <span class="inline-flex w-fit items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+          {{ resolveCategoryLabel(template.categoryId) }}
+        </span>
         <div>
           <p class="text-sm font-medium text-slate-700">Placeholders</p>
           <div class="mt-2 flex flex-wrap gap-2">
