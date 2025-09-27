@@ -1,116 +1,31 @@
-<script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useNavigationStore } from '@/stores/navigation'
-
-const router = useRouter()
-const navigation = useNavigationStore()
-const { categoryOptions, defaultCategoryId } = storeToRefs(navigation)
-const form = reactive({
-  name: '',
-  placeholders: '',
-  categoryId: defaultCategoryId.value
-})
-const file = ref<File | null>(null)
-const error = ref('')
-const saving = ref(false)
-
-const onFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  if (target.files && target.files[0]) {
-    file.value = target.files[0]
-  }
-}
-
-const submit = async () => {
-  error.value = ''
-  if (!form.name.trim()) {
-    error.value = 'Template name is required.'
-    return
-  }
-  if (!file.value) {
-    error.value = 'Please select a .docx file to upload.'
-    return
-  }
-  saving.value = true
-  const body = new FormData()
-  body.append('name', form.name)
-  body.append('placeholders', form.placeholders)
-  body.append('categoryId', form.categoryId)
-  body.append('file', file.value)
-  try {
-    await $fetch('/api/templates', {
-      method: 'POST',
-      body
-    })
-    router.push('/templates')
-  } catch (err: any) {
-    error.value = err?.data?.message || 'Failed to upload template.'
-  } finally {
-    saving.value = false
-  }
-}
-</script>
-
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-slate-900">Upload Template</h1>
-        <p class="mt-2 text-sm text-slate-500">Upload DOCX templates and define available placeholders.</p>
-      </div>
-      <NuxtLink to="/templates" class="text-sm text-slate-500 hover:text-primary-600">Back to list</NuxtLink>
-    </div>
+    <header class="flex flex-col gap-2">
+      <h1 class="text-3xl font-bold text-slate-900">Add a Markdown Template</h1>
+      <p class="text-sm text-slate-600">
+        To add a new template, create a <code>.md</code> file inside <code>server/data/templates</code>. Use double curly braces
+        like <code v-pre>{{ProjectName}}</code> to mark placeholders. They will automatically appear as Quill editors when you
+        open the template at <code>/templates/&lt;file-name&gt;</code>.
+      </p>
+    </header>
 
-    <div class="card space-y-6">
-      <div>
-        <label class="block text-sm font-medium text-slate-700">Template Name</label>
-        <input
-          v-model="form.name"
-          type="text"
-          class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-        />
-      </div>
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="text-lg font-semibold text-slate-900">Example</h2>
+      <pre v-pre class="mt-4 overflow-x-auto rounded bg-slate-900/95 p-4 text-xs text-slate-100">
+# {{ProjectName}}
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700">Category</label>
-        <select
-          v-model="form.categoryId"
-          class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
+## Overview
+{{Overview}}
 
-      <div>
-        <label class="block text-sm font-medium text-slate-700">DOCX File</label>
-        <input
-          type="file"
-          accept=".docx"
-          class="mt-1 w-full text-sm"
-          @change="onFileChange"
-        />
-        <p class="mt-1 text-xs text-slate-400">Only .docx files are supported.</p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-slate-700">Placeholder Fields</label>
-        <textarea
-          v-model="form.placeholders"
-          rows="4"
-          class="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
-          placeholder="Enter placeholders separated by commas, e.g. first_name, last_name, company"
-        ></textarea>
-      </div>
-
-      <div class="flex items-center justify-between">
-        <p v-if="error" class="text-sm text-red-500">{{ error }}</p>
-        <button class="btn" :disabled="saving" @click="submit">
-          <span v-if="saving">Uploading...</span>
-          <span v-else>Save Template</span>
-        </button>
-      </div>
+## Success Metrics
+- {{MetricOne}}
+- {{MetricTwo}}
+      </pre>
+      <p class="mt-4 text-sm text-slate-600">
+        Save this as <code>server/data/templates/project_plan.md</code> then visit
+        <NuxtLink to="/templates/project_plan" class="text-primary-600 hover:underline">/templates/project_plan</NuxtLink> to
+        start editing.
+      </p>
     </div>
   </div>
 </template>

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   app: {
     head: {
-      title: 'Knowledge Base + Document Generator',
+      title: 'Markdown Template Editor with Quill',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
       ]
